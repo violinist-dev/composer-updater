@@ -3,7 +3,9 @@
 namespace Violinist\ComposerUpdater;
 
 use Psr\Log\LoggerInterface;
+use Violinist\ComposerLockData\ComposerLockData;
 use Violinist\ComposerUpdater\Exception\ComposerUpdateProcessFailedException;
+use Violinist\ComposerUpdater\Exception\NotUpdatedException;
 use Violinist\ProcessFactory\ProcessFactoryInterface;
 
 class Updater
@@ -39,9 +41,10 @@ class Updater
      */
     protected $logger;
 
-    public function __construct($cwd)
+    public function __construct($cwd, $package)
     {
         $this->cwd = $cwd;
+        $this->package = $package;
     }
 
     /**
@@ -85,6 +88,8 @@ class Updater
 
     public function executeUpdate()
     {
+        $pre_update_lock = ComposerLockData::createFromFile($this->cwd . '/composer.lock');
+        $pre_update_data = $pre_update_lock->getPackageData($this->package);
         $commands = $this->getRecipies($this->package);
         foreach ($commands as $command) {
             try {
@@ -106,22 +111,37 @@ class Updater
                     $this->log($process->getErrorOutput());
                     throw new \Exception($message);
                 }
-            }
-            catch (\Exception $e) {
+                $post_update_data = ComposerLockData::createFromString(json_encode($new_lock_data))->getPackageData($this->package);
+                $version_to = $post_update_data->version;
+                if (isset($post_update_data->source) && $post_update_data->source->type == 'git' && isset($pre_update_data->source)) {
+                    $version_from = $pre_update_data->source->reference;
+                    $version_to = $post_update_data->source->reference;
+                }
+                if ($version_to === $version_from) {
+                    // Nothing has happened here. Although that can be alright (like we
+                    // have updated some dependencies of this package) this is not what
+                    // this service does, currently, and also the title of the PR would be
+                    // wrong.
+                    $this->log($process->getErrorOutput(), [
+                        'package' => $this->package,
+                    ]);
+                    throw new NotUpdatedException('The version installed is still the same after trying to update.');
+                }
+            } catch (\Exception $e) {
                 continue;
             }
         }
     }
 
-    protected function log($message)
+    protected function log($message, $context = [])
     {
-        $this->getLogger()->log('info', $message);
+        $this->getLogger()->log('info', $message, $context);
     }
 
-    protected function getRecipies($package)
+    protected function getRecipies()
     {
         return [
-            'composer update -n --no-ansi ' .  $package
+            'composer update -n --no-ansi ' .  $this->package
         ];
     }
 
