@@ -5,6 +5,7 @@ namespace Violinist\ComposerUpdater;
 use Psr\Log\LoggerInterface;
 use Violinist\ComposerLockData\ComposerLockData;
 use Violinist\ComposerUpdater\Exception\ComposerUpdateProcessFailedException;
+use Violinist\ComposerUpdater\Exception\NotUpdatedException;
 use Violinist\ProcessFactory\ProcessFactoryInterface;
 
 class Updater
@@ -40,9 +41,10 @@ class Updater
      */
     protected $logger;
 
-    public function __construct($cwd)
+    public function __construct($cwd, $package)
     {
         $this->cwd = $cwd;
+        $this->package = $package;
     }
 
     /**
@@ -125,8 +127,7 @@ class Updater
                     ]);
                     throw new NotUpdatedException('The version installed is still the same after trying to update.');
                 }
-            }
-            catch (\Exception $e) {
+            } catch (\Exception $e) {
                 continue;
             }
         }
@@ -137,10 +138,10 @@ class Updater
         $this->getLogger()->log('info', $message, $context);
     }
 
-    protected function getRecipies($package)
+    protected function getRecipies()
     {
         return [
-            'composer update -n --no-ansi ' .  $package
+            'composer update -n --no-ansi ' .  $this->package
         ];
     }
 
