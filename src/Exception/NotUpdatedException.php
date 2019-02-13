@@ -2,4 +2,6 @@
 
 namespace Violinist\ComposerUpdater\Exception;
 
-class NotUpdatedException extends \Exception {}
+class NotUpdatedException extends \Exception
+{
+}

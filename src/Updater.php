@@ -152,5 +152,4 @@ class Updater
             'COMPOSER_DISCARD_CHANGES' => 'true',
         ];
     }
-
 }
