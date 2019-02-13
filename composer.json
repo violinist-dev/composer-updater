@@ -14,7 +14,7 @@
   },
   "require": {
     "symfony/process": "^2.7 || ^3.0 || ^4.0",
-    "violinist-dev/process-factory": "dev-master",
+    "violinist-dev/process-factory": "^1.0",
     "violinist-dev/composer-lock-data": "^1.0"
   },
   "scripts": {
