@@ -10,7 +10,7 @@
          processIsolation="false"
          stopOnFailure="false">
     <testsuites>
-        <testsuite name="Cloud checker Test Suite">
+        <testsuite name="Test Suite">
             <directory>tests/Unit</directory>
         </testsuite>
     </testsuites>
