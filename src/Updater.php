@@ -3,6 +3,7 @@
 namespace Violinist\ComposerUpdater;
 
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Process\Process;
 use Violinist\ComposerLockData\ComposerLockData;
 use Violinist\ComposerUpdater\Exception\ComposerUpdateProcessFailedException;
 use Violinist\ComposerUpdater\Exception\NotUpdatedException;
@@ -20,6 +21,11 @@ class Updater
      * @var bool
      */
     protected $withUpdate = true;
+
+    /**
+     * @var bool
+     */
+    protected $devPackage = false;
 
     /**
      * @var ProcessFactoryInterface
@@ -40,6 +46,11 @@ class Updater
      * @var LoggerInterface
      */
     protected $logger;
+
+    /**
+     * @var \stdClass
+     */
+    protected $postUpdateData;
 
     public function __construct($cwd, $package)
     {
@@ -85,15 +96,76 @@ class Updater
         $this->logger = $logger;
     }
 
+    /**
+     * @return bool
+     */
+    public function isWithUpdate()
+    {
+        return $this->withUpdate;
+    }
+
+    /**
+     * @param bool $withUpdate
+     */
+    public function setWithUpdate($withUpdate)
+    {
+        $this->withUpdate = $withUpdate;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDevPackage()
+    {
+        return $this->devPackage;
+    }
+
+    /**
+     * @param bool $devPackage
+     */
+    public function setDevPackage($devPackage)
+    {
+        $this->devPackage = $devPackage;
+    }
+
+    public function executeRequire($new_version)
+    {
+        $pre_update_lock = ComposerLockData::createFromFile($this->cwd . '/composer.lock');
+        $pre_update_data = $pre_update_lock->getPackageData($this->package);
+        $commands = $this->getRequireRecipes($new_version);
+        $exception = null;
+        $success = false;
+        foreach ($commands as $command) {
+            if ($success) {
+                continue;
+            }
+            try {
+                $full_command = sprintf('%s %s', $command, $this->isWithUpdate() ? '--update-with-dependencies' : '');
+                $process = $this->getProcessFactory()->getProcess($full_command, $this->cwd, $this->getEnv(), null, $this->timeout);
+                $process->run();
+                $this->handlePostComposerCommand($pre_update_data, $process);
+                $success = true;
+            } catch (\Throwable $e) {
+                continue;
+            }
+        }
+        if (!$success) {
+            // Re-throw the last exception.
+            throw $e;
+        }
+    }
+
 
     public function executeUpdate()
     {
         $pre_update_lock = ComposerLockData::createFromFile($this->cwd . '/composer.lock');
         $pre_update_data = $pre_update_lock->getPackageData($this->package);
-        $commands = $this->getRecipies($this->package);
+        $commands = $this->getUpdateRecipies($this->package);
+        $exception = null;
+        $success = false;
         foreach ($commands as $command) {
             try {
-                $full_command = sprintf('%s %s', $command, $this->withUpdate ? '--with-dependencies' : '');
+                $full_command = sprintf('%s %s', $command, $this->isWithUpdate() ? '--with-dependencies' : '');
                 $process = $this->getProcessFactory()->getProcess($full_command, $this->cwd, $this->getEnv(), null, $this->timeout);
                 $process->run();
                 if ($process->getExitCode()) {
@@ -101,36 +173,54 @@ class Updater
                     $this->log($process->getErrorOutput());
                     throw new ComposerUpdateProcessFailedException('Composer update exited with exit code ' . $process->getExitCode());
                 }
-                $new_lock_data = @json_decode(@file_get_contents(sprintf('%s/composer.lock', $this->cwd)));
-                if (!$new_lock_data) {
-                    $message = sprintf('No composer.lock found after updating %s', $this->package);
-                    $this->log($message);
-                    $this->log('This is the stdout:');
-                    $this->log($process->getOutput());
-                    $this->log('This is the stderr:');
-                    $this->log($process->getErrorOutput());
-                    throw new \Exception($message);
-                }
-                $post_update_data = ComposerLockData::createFromString(json_encode($new_lock_data))->getPackageData($this->package);
-                $version_to = $post_update_data->version;
-                if (isset($post_update_data->source) && $post_update_data->source->type == 'git' && isset($pre_update_data->source)) {
-                    $version_from = $pre_update_data->source->reference;
-                    $version_to = $post_update_data->source->reference;
-                }
-                if ($version_to === $version_from) {
-                    // Nothing has happened here. Although that can be alright (like we
-                    // have updated some dependencies of this package) this is not what
-                    // this service does, currently, and also the title of the PR would be
-                    // wrong.
-                    $this->log($process->getErrorOutput(), [
-                        'package' => $this->package,
-                    ]);
-                    throw new NotUpdatedException('The version installed is still the same after trying to update.');
-                }
-            } catch (\Exception $e) {
+                $this->handlePostComposerCommand($pre_update_data, $process);
+                $success = true;
+            } catch (\Throwable $e) {
                 continue;
             }
         }
+        if (!$success) {
+            throw $e;
+        }
+    }
+
+    protected function handlePostComposerCommand($pre_update_data, Process $process)
+    {
+        $new_lock_data = @json_decode(@file_get_contents(sprintf('%s/composer.lock', $this->cwd)));
+        if (!$new_lock_data) {
+            $message = sprintf('No composer.lock found after updating %s', $this->package);
+            $this->log($message);
+            $this->log('This is the stdout:');
+            $this->log($process->getOutput());
+            $this->log('This is the stderr:');
+            $this->log($process->getErrorOutput());
+            throw new \Exception($message);
+        }
+        $post_update_data = ComposerLockData::createFromString(json_encode($new_lock_data))->getPackageData($this->package);
+        $version_to = $post_update_data->version;
+        if (isset($post_update_data->source) && $post_update_data->source->type == 'git' && isset($pre_update_data->source)) {
+            $version_from = $pre_update_data->source->reference;
+            $version_to = $post_update_data->source->reference;
+        }
+        if ($version_to === $version_from) {
+            // Nothing has happened here. Although that can be alright (like we
+            // have updated some dependencies of this package) this is not what
+            // this service does, currently, and also the title of the PR would be
+            // wrong.
+            $this->log($process->getErrorOutput(), [
+                'package' => $this->package,
+            ]);
+            throw new NotUpdatedException('The version installed is still the same after trying to update.');
+        }
+        $this->postUpdateData = $post_update_data;
+    }
+
+    /**
+     * @return \stdClass
+     */
+    public function getPostUpdateData()
+    {
+        return $this->postUpdateData;
     }
 
     protected function log($message, $context = [])
@@ -138,7 +228,14 @@ class Updater
         $this->getLogger()->log('info', $message, $context);
     }
 
-    protected function getRecipies()
+    protected function getRequireRecipes($version)
+    {
+        return [
+            sprintf('composer %s -n --no-ansi %s:%s', $this->isDevPackage() ? 'require --dev' : 'require', $this->package, $version)
+        ];
+    }
+
+    protected function getUpdateRecipies()
     {
         return [
             'composer update -n --no-ansi ' .  $this->package
