@@ -245,6 +245,10 @@ class Updater
     protected function getEnv()
     {
         return [
+            // Need the path to composer.
+            'PATH' => getenv('PATH'),
+            // And we need a "HOME" environment.
+            'HOME' => getenv('HOME'),
             'COMPOSER_ALLOW_SUPERUSER' => 1,
             'COMPOSER_DISCARD_CHANGES' => 'true',
         ];
