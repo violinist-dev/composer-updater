@@ -237,9 +237,18 @@ class Updater
 
     protected function getUpdateRecipies()
     {
-        return [
+        $map = [
+            'drupal/core' => [
+                'composer update -n --no-ansi drupal/core webflo/drupal-core-require-dev symfony/*'
+            ],
+        ];
+        $return = [
             'composer update -n --no-ansi ' .  $this->package
         ];
+        if (isset($map[$this->package])) {
+            $return = array_merge($return, $map[$this->package]);
+        }
+        return $return;
     }
 
     protected function getEnv()
