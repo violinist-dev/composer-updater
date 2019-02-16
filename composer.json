@@ -12,6 +12,11 @@
       "Violinist\\ComposerUpdater\\": "src"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "Violinist\\ComposerUpdater\\Tests\\": "tests"
+    }
+  },
   "require": {
     "symfony/process": "^2.7 || ^3.0 || ^4.0",
     "violinist-dev/process-factory": "^1.0",
