@@ -1,4 +1,4 @@
 vendor
 /data/
 .idea
-composer.lock
+/composer.lock
