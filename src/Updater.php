@@ -198,6 +198,7 @@ class Updater
         }
         $post_update_data = ComposerLockData::createFromString(json_encode($new_lock_data))->getPackageData($this->package);
         $version_to = $post_update_data->version;
+        $version_from = $pre_update_data->version;
         if (isset($post_update_data->source) && $post_update_data->source->type == 'git' && isset($pre_update_data->source)) {
             $version_from = $pre_update_data->source->reference;
             $version_to = $post_update_data->source->reference;
