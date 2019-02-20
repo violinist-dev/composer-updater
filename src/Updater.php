@@ -52,10 +52,31 @@ class Updater
      */
     protected $postUpdateData;
 
+    /**
+     * @var string
+     */
+    protected $constraint;
+
     public function __construct($cwd, $package)
     {
         $this->cwd = $cwd;
         $this->package = $package;
+    }
+
+    /**
+     * @return string
+     */
+    public function getConstraint()
+    {
+        return $this->constraint;
+    }
+
+    /**
+     * @param string $constraint
+     */
+    public function setConstraint($constraint)
+    {
+        $this->constraint = $constraint;
     }
 
     /**
@@ -232,7 +253,7 @@ class Updater
     protected function getRequireRecipes($version)
     {
         return [
-            sprintf('composer %s -n --no-ansi %s:%s', $this->isDevPackage() ? 'require --dev' : 'require', $this->package, $version)
+            sprintf('composer %s -n --no-ansi %s:%s%s', $this->isDevPackage() ? 'require --dev' : 'require', $this->package, $this->constraint, $version)
         ];
     }
 
