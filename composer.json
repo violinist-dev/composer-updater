@@ -28,6 +28,9 @@
       "./vendor/bin/phpcs -p -n"
     ]
   },
+  "config": {
+    "process-timeout": 1200
+  },
   "require-dev": {
     "phpunit/phpunit": "^6.5",
     "satooshi/php-coveralls": "^2.0",
