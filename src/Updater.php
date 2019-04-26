@@ -263,6 +263,9 @@ class Updater
             'drupal/core' => [
                 'composer update -n --no-ansi drupal/core webflo/drupal-core-require-dev symfony/*'
             ],
+            'drupal/dropzonejs' => [
+                'composer update -n --no-ansi drupal/dropzonejs drupal/dropzonejs_eb_widget'
+            ]
         ];
         $return = [
             'composer update -n --no-ansi ' .  $this->package
