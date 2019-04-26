@@ -20,7 +20,7 @@
         "cweagans/composer-patches": "^1.6.5",
         "drupal-composer/drupal-scaffold": "^2.5",
         "drupal/core": "^8.6.0",
-        "drupal/dropzonejs": "^2.0.0-alpha2",
+        "drupal/dropzonejs": "^2.0@alpha",
         "drush/drush": "^9.0.0",
         "twig/extensions": "^1.5",
         "vlucas/phpdotenv": "^2.4",
