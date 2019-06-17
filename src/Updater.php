@@ -187,6 +187,9 @@ class Updater
         foreach ($commands as $command) {
             try {
                 $full_command = sprintf('%s %s', $command, $this->isWithUpdate() ? '--with-dependencies' : '');
+                $this->log("Creating command $full_command", [
+                    'command' => $full_command,
+                ]);
                 $process = $this->getProcessFactory()->getProcess($full_command, $this->cwd, $this->getEnv(), null, $this->timeout);
                 $process->run();
                 if ($process->getExitCode()) {
