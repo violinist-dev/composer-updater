@@ -177,6 +177,11 @@ class Updater
     }
 
 
+    /**
+     * @throws \Throwable
+     * @throws ComposerUpdateProcessFailedException
+     * @throws NotUpdatedException
+     */
     public function executeUpdate()
     {
         $pre_update_lock = ComposerLockData::createFromFile($this->cwd . '/composer.lock');
@@ -193,9 +198,9 @@ class Updater
                 $process = $this->getProcessFactory()->getProcess($full_command, $this->cwd, $this->getEnv(), null, $this->timeout);
                 $process->run();
                 if ($process->getExitCode()) {
-                    $this->log('Problem running composer update:');
-                    $this->log($process->getErrorOutput());
-                    throw new ComposerUpdateProcessFailedException('Composer update exited with exit code ' . $process->getExitCode());
+                    $exception = new ComposerUpdateProcessFailedException('Composer update exited with exit code ' . $process->getExitCode());
+                    $exception->setErrorOutput($process->getErrorOutput());
+                    throw $exception;
                 }
                 $this->handlePostComposerCommand($pre_update_data, $process);
                 $success = true;
