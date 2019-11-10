@@ -273,6 +273,9 @@ class Updater
             ],
             'drupal/dropzonejs' => [
                 'composer update -n --no-ansi drupal/dropzonejs drupal/dropzonejs_eb_widget'
+            ],
+            'drupal/commerce' => [
+                'composer update -n --no-ansi drupal/commerce drupal/commerce_price drupal/commerce_product drupal/commerce_order drupal/commerce_payment drupal/commerce_payment_example drupal/commerce_checkout drupal/commerce_tax drupal/commerce_cart drupal/commerce_log drupal/commerce_store drupal/commerce_promotion drupal/commerce_number_pattern'
             ]
         ];
         $return = [
