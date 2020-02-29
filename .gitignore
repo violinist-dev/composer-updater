@@ -2,3 +2,5 @@ vendor
 /data/
 .idea
 /composer.lock
+tests/assets/
+!tests/assets/composer.*

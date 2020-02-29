@@ -19,7 +19,15 @@ abstract class IntegrationBase extends TestCase
         $lock_string = @file_get_contents($file);
         $pre_lock_data = ComposerLockData::createFromString($lock_string);
         $updater = new Updater($directory, $this->package);
-        $updater->executeUpdate();
+        try {
+            $updater->executeUpdate();
+        }
+        catch (\Throwable $e) {
+            if (method_exists($e, 'getErrorOutput')) {
+                var_export($e->getErrorOutput());
+            }
+            throw $e;
+        }
         // Now read the lock data of it.
         $post_lock_data = ComposerLockData::createFromFile($file);
         $log_package_data_pre = $pre_lock_data->getPackageData($this->package);
