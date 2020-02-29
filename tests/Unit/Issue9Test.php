@@ -7,7 +7,7 @@ use Symfony\Component\Process\Process;
 use Violinist\ComposerUpdater\Exception\NotUpdatedException;
 use Violinist\ComposerUpdater\Updater;
 
-class UnitTest extends TestCase
+class Issue9Test extends TestCase
 {
     public function testRegularUpdateNoComposerLock()
     {
