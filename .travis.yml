@@ -9,9 +9,12 @@ php:
   - '7.2'
   - '7.3'
   - '7.4'
+before_install:
+  - echo "memory_limit=2G" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
 install:
   - composer install --no-interaction
 script:
+  - php -r "echo ini_get('memory_limit').PHP_EOL;"
   - composer test
 after_success:
  - travis_retry php vendor/bin/php-coveralls -v
