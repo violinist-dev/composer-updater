@@ -237,10 +237,15 @@ class Updater
             // have updated some dependencies of this package) this is not what
             // this service does, currently, and also the title of the PR would be
             // wrong.
-            $this->log($process->getErrorOutput(), [
-                'package' => $this->package,
-            ]);
-            throw new NotUpdatedException('The version installed is still the same after trying to update.');
+            // In theory though, the reference sources can be the same (the same commit), but the
+            // version is different. In which case it does not really matter much to update, but it
+            // can be frustrating to get an error. So let's not give an error.
+            if ($post_update_data->version === $pre_update_data->version) {
+                $this->log($process->getErrorOutput(), [
+                    'package' => $this->package,
+                ]);
+                throw new NotUpdatedException('The version installed is still the same after trying to update.');
+            }
         }
         $this->postUpdateData = $post_update_data;
     }
