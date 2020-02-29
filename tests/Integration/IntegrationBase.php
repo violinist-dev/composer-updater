@@ -21,8 +21,7 @@ abstract class IntegrationBase extends TestCase
         $updater = new Updater($directory, $this->package);
         try {
             $updater->executeUpdate();
-        }
-        catch (\Throwable $e) {
+        } catch (\Throwable $e) {
             if (method_exists($e, 'getErrorOutput')) {
                 var_export($e->getErrorOutput());
             }
