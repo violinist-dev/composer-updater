@@ -15,7 +15,7 @@ class Updater
     /**
      * @var int
      */
-    protected $timeout = 600;
+    protected $timeout = 1200;
 
     /**
      * @var bool
