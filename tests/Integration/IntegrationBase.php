@@ -4,6 +4,7 @@ namespace Violinist\ComposerUpdater\Tests\Integration;
 
 use PHPUnit\Framework\TestCase;
 use Violinist\ComposerLockData\ComposerLockData;
+use Violinist\ComposerUpdater\Exception\ComposerUpdateProcessFailedException;
 use Violinist\ComposerUpdater\Updater;
 
 abstract class IntegrationBase extends TestCase
@@ -23,7 +24,9 @@ abstract class IntegrationBase extends TestCase
             $updater->executeUpdate();
         } catch (\Throwable $e) {
             if (method_exists($e, 'getErrorOutput')) {
-                var_export($e->getErrorOutput());
+                /** @var ComposerUpdateProcessFailedException $ex */
+                $ex = $e;
+                var_export($ex->getErrorOutput());
             }
             throw $e;
         }

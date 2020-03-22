@@ -26,7 +26,7 @@
     "test": [
       "./vendor/bin/phpunit",
       "./vendor/bin/phpcs -p -n",
-      "./vendor/bin/phpstan analyse src tests --level=2"
+      "./vendor/bin/phpstan analyse src tests --level=2 -c phpstan.neon"
     ]
   },
   "config": {
