@@ -60,21 +60,24 @@ class Updater
     /**
      * Bundled packages.
      *
-     * @var array
+     * @var object
      */
     protected $bundledPackages;
 
     /**
-     * @return array
+     * @return object
      */
     public function getBundledPackages()
     {
+        if (empty($this->bundledPackages)) {
+            return (object) [];
+        }
         return $this->bundledPackages;
     }
 
     public function hasBundledPackages()
     {
-        return (bool) count($this->getBundledPackages());
+        return (bool) count(get_object_vars($this->getBundledPackages()));
     }
 
     /**
@@ -94,8 +97,7 @@ class Updater
                     return false;
                 }
             });
-        }
-        catch (\Throwable $e) {
+        } catch (\Throwable $e) {
             // So no bundled packages it is. Also. This probably means no updates, but that will be an exception for
             // another method.
         }
