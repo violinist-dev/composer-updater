@@ -202,6 +202,7 @@ class Updater
         $commands = $this->getRequireRecipes($new_version);
         $exception = null;
         $success = false;
+        $e = null;
         foreach ($commands as $command) {
             if ($success) {
                 continue;
@@ -218,7 +219,10 @@ class Updater
         }
         if (!$success) {
             // Re-throw the last exception.
-            throw $e;
+            if ($e) {
+                throw $e;
+            }
+            throw new \Exception('The result was not successful, but we are not sure what failed');
         }
     }
 
@@ -232,9 +236,10 @@ class Updater
     {
         $pre_update_lock = ComposerLockData::createFromFile($this->cwd . '/composer.lock');
         $pre_update_data = $pre_update_lock->getPackageData($this->package);
-        $commands = $this->getUpdateRecipies($this->package);
+        $commands = $this->getUpdateRecipies();
         $exception = null;
         $success = false;
+        $e = null;
         foreach ($commands as $command) {
             try {
                 $full_command = sprintf('%s %s', $command, $this->isWithUpdate() ? '--with-dependencies' : '');
@@ -255,7 +260,11 @@ class Updater
             }
         }
         if (!$success) {
-            throw $e;
+            // Re-throw the last exception.
+            if ($e) {
+                throw $e;
+            }
+            throw new \Exception('The result was not successful, but we are not sure what failed');
         }
     }
 
@@ -334,7 +343,7 @@ class Updater
         ];
         if ($this->hasBundledPackages()) {
             $return = [
-                sprintf('composer update -n --no-ansi %s %s',  $this->package, implode(' ', $this->getBundledPackages())),
+                sprintf('composer update -n --no-ansi %s %s', $this->package, implode(' ', $this->getBundledPackages())),
             ];
         }
         if (isset($map[$this->package])) {
