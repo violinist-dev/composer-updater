@@ -57,6 +57,50 @@ class Updater
      */
     protected $constraint;
 
+    /**
+     * Bundled packages.
+     *
+     * @var array
+     */
+    protected $bundledPackages;
+
+    /**
+     * @return array
+     */
+    public function getBundledPackages()
+    {
+        return $this->bundledPackages;
+    }
+
+    public function hasBundledPackages()
+    {
+        return (bool) count($this->getBundledPackages());
+    }
+
+    /**
+     * @param array $bundledPackages
+     */
+    public function setBundledPackages($bundledPackages)
+    {
+        $this->bundledPackages = [];
+        // Now filter them. There should only be bundled packages that we can also find in composer.lock
+        try {
+            $lock = ComposerLockData::createFromFile($this->cwd . '/composer.lock');
+            $this->bundledPackages = array_filter($bundledPackages, function ($package) use ($lock) {
+                try {
+                    return $lock->getPackageData($package);
+                } catch (\Throwable $e) {
+                    // Probably means the package is not there.
+                    return false;
+                }
+            });
+        }
+        catch (\Throwable $e) {
+            // So no bundled packages it is. Also. This probably means no updates, but that will be an exception for
+            // another method.
+        }
+    }
+
     public function __construct($cwd, $package)
     {
         $this->cwd = $cwd;
@@ -286,6 +330,11 @@ class Updater
         $return = [
             'composer update -n --no-ansi ' .  $this->package
         ];
+        if ($this->hasBundledPackages()) {
+            $return = [
+                sprintf('composer update -n --no-ansi %s %s',  $this->package, implode(' ', $this->getBundledPackages())),
+            ];
+        }
         if (isset($map[$this->package])) {
             $return = array_merge($return, $map[$this->package]);
         }
