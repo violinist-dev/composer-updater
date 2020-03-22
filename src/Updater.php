@@ -350,6 +350,7 @@ class Updater
             'HOME' => getenv('HOME'),
             'COMPOSER_ALLOW_SUPERUSER' => 1,
             'COMPOSER_DISCARD_CHANGES' => 'true',
+            'COMPOSER_NO_INTERACTION' => 1,
         ];
     }
 }
