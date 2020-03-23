@@ -77,7 +77,7 @@ class Updater
 
     public function hasBundledPackages()
     {
-        return (bool) count(get_object_vars($this->getBundledPackages()));
+        return (bool) count($this->getBundledPackages());
     }
 
     /**
