@@ -60,17 +60,17 @@ class Updater
     /**
      * Bundled packages.
      *
-     * @var object
+     * @var array
      */
     protected $bundledPackages;
 
     /**
-     * @return object
+     * @return array
      */
     public function getBundledPackages()
     {
         if (empty($this->bundledPackages)) {
-            return (object) [];
+            return [];
         }
         return $this->bundledPackages;
     }
