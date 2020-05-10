@@ -11,6 +11,10 @@ use Violinist\ProcessFactory\ProcessFactoryInterface;
 
 class Updater
 {
+    /**
+     * @var bool
+     */
+    protected $runScripts = true;
 
     /**
      * @var int
@@ -63,6 +67,22 @@ class Updater
      * @var array
      */
     protected $bundledPackages;
+
+    /**
+     * @return bool
+     */
+    public function shouldRunScripts(): bool
+    {
+        return $this->runScripts;
+    }
+
+    /**
+     * @param bool $runScripts
+     */
+    public function setRunScripts(bool $runScripts)
+    {
+        $this->runScripts = $runScripts;
+    }
 
     /**
      * @return array
@@ -208,7 +228,15 @@ class Updater
                 continue;
             }
             try {
-                $full_command = sprintf('%s %s', $command, $this->isWithUpdate() ? '--update-with-dependencies' : '');
+                $full_command = sprintf(
+                    '%s %s %s',
+                    $command,
+                    ($this->isWithUpdate() ? '--update-with-dependencies' : ''),
+                    (!$this->shouldRunScripts() ? '--no-scripts' : '')
+                );
+                $this->log("Creating command $full_command", [
+                    'command' => $full_command,
+                ]);
                 $process = $this->getProcessFactory()->getProcess($full_command, $this->cwd, $this->getEnv(), null, $this->timeout);
                 $process->run();
                 $this->handlePostComposerCommand($pre_update_data, $process);
@@ -242,7 +270,12 @@ class Updater
         $e = null;
         foreach ($commands as $command) {
             try {
-                $full_command = sprintf('%s %s', $command, $this->isWithUpdate() ? '--with-dependencies' : '');
+                $full_command = sprintf(
+                    '%s %s %s',
+                    $command,
+                    ($this->isWithUpdate() ? '--with-dependencies' : ''),
+                    ($this->shouldRunScripts() ? '' : '--no-scripts')
+                );
                 $this->log("Creating command $full_command", [
                     'command' => $full_command,
                 ]);
