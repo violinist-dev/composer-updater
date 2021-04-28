@@ -1,0 +1,120 @@
+{
+    "name": "drupal-composer/drupal-project",
+    "description": "Project template for Drupal 8 projects with composer",
+    "type": "project",
+    "license": "GPL-2.0+",
+    "authors": [
+        {
+            "name": "",
+            "role": ""
+        }
+    ],
+    "repositories": {
+        "1": {
+            "type": "composer",
+            "url": "https://packages.drupal.org/8"
+        },
+        "2": {
+            "type": "composer",
+            "url": "https://asset-packagist.org"
+        }
+    },
+    "require": {
+        "php": ">=7.3",
+        "ext-dom": "*",
+        "ext-json": "*",
+        "ext-pdo": "*",
+        "ext-simplexml": "*",
+        "alb/oembed": "^1.1",
+        "bower-asset/cropper": "^2.3",
+        "composer/installers": "^1.2",
+        "cweagans/composer-patches": "~1.0",
+        "drupal/admin_toolbar": "^2.0",
+        "drupal/antibot": "^1.4",
+        "drupal/autosave_form": "^1.1",
+        "drupal/codefilter": "1.x-dev",
+        "drupal/codesnippet": "^1.7",
+        "drupal/contact_storage": "^1.0@beta",
+        "drupal/core-composer-scaffold": "^9.0",
+        "drupal/core-recommended": "^9.0",
+        "drupal/diff": "^1.0",
+        "drupal/disqus": "2.x-dev",
+        "drupal/editor_advanced_link": "^1.4",
+        "drupal/embed": "^1.0",
+        "drupal/entity_browser": "^2.0",
+        "drupal/entity_embed": "^1.0@beta",
+        "drupal/gin": "^3.0@alpha",
+        "drupal/gin_login": "^1.0@alpha",
+        "drupal/gin_toolbar": "^1.0@beta",
+        "drupal/google_analytics": "^3",
+        "drupal/honeypot": "^2.0",
+        "drupal/indieweb": "^1.6",
+        "drupal/inline_entity_form": "^1.0@beta",
+        "drupal/linkit": "^5.0@beta",
+        "drupal/media_entity_browser": "^2.0@alpha",
+        "drupal/media_entity_instagram": "^3.0",
+        "drupal/media_entity_twitter": "^2.0@alpha",
+        "drupal/metatag": "^1.0",
+        "drupal/paragraphs": "^1.1",
+        "drupal/pathauto": "^1.0",
+        "drupal/preview_link": "^1.0",
+        "drupal/redirect": "^1.0",
+        "drupal/redis": "^1.2",
+        "drupal/scheduler": "^1.0",
+        "drupal/schema_metatag": "^2.0",
+        "drupal/search_api": "^1",
+        "drupal/simple_sitemap": "^3.0",
+        "drupal/swiftmailer": "^2.0@beta",
+        "drupal/video_embed_field": "^2.0",
+        "drush/drush": "^10.0",
+        "embed/embed": "^3.4",
+        "fabpot/goutte": "^3.2",
+        "oomphinc/composer-installers-extender": "^2.0",
+        "platformsh/config-reader": "^2.4",
+        "rollbar/rollbar": "~1.5"
+    },
+    "require-dev": {
+        "roave/security-advisories": "dev-latest",
+        "drupal/core-dev-pinned": "^9.0"
+    },
+    "conflict": {
+        "drupal/drupal": "*"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "platform": {
+            "php": "7.3"
+        },
+        "bin-dir": "bin",
+        "sort-packages": true
+    },
+    "scripts": {
+        "update-core": "composer update drupal/core-recommended drupal/core-composer-scaffold drupal/core-dev-pinned --with-dependencies"
+    },
+    "extra": {
+        "installer-types": [
+            "bower-asset",
+            "npm-asset"
+        ],
+        "drupal-scaffold": {
+            "locations": {
+                "web-root": "web/"
+            }
+        },
+        "installer-paths": {
+            "web/core": ["type:drupal-core"],
+            "web/libraries/{$name}": [
+                "type:drupal-library",
+                "type:bower-asset",
+                "type:npm-asset"
+            ],
+            "web/modules/contrib/{$name}": ["type:drupal-module"],
+            "web/profiles/contrib/{$name}": ["type:drupal-profile"],
+            "web/themes/contrib/{$name}": ["type:drupal-theme"],
+            "drush/Commands/contrib/{$name}": ["type:drupal-drush"],
+            "web/modules/custom/{$name}": ["type:drupal-custom-module"],
+            "web/themes/custom/{$name}": ["type:drupal-custom-theme"]
+        }
+    }
+}
