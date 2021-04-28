@@ -44,11 +44,11 @@ jobs:
         run: composer --verbose install
 
       - name: Install patches if we have to
-        if: matrix.php-versions != "7.0"
+        if: matrix.php-versions != 7.0
         run: composer require --dev cweagans/composer-patches
 
       - name: Remove and reinstall phpunit
-        if: matrix.php-versions != "7.0"
+        if: matrix.php-versions != 7.0
         run: |
           rm -rf vendor/phpunit
           composer install
