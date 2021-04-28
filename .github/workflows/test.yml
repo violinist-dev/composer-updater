@@ -52,5 +52,18 @@ jobs:
           rm -rf vendor/phpunit
           composer install
 
+      # Since this is a library we do not have a lock file. But at this point we do, and now we want to use that for the
+      # tests we are about to run.
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: |
+          echo "::set-output name=dir::$(composer config cache-files-dir)"
+      - uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
       - name: Run tests
         run: composer test

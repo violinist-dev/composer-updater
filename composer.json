@@ -31,7 +31,7 @@
     ]
   },
   "config": {
-    "process-timeout": 1200,
+    "process-timeout": 2400,
     "platform": {
       "php": "7.0.8"
     }
