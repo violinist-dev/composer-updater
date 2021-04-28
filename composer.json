@@ -1,5 +1,6 @@
 {
   "name": "violinist-dev/composer-updater",
+  "description": "Updater package",
   "license": "MIT",
   "authors": [
     {
