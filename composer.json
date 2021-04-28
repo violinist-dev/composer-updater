@@ -1,5 +1,6 @@
 {
   "name": "violinist-dev/composer-updater",
+  "description": "Updater package",
   "license": "MIT",
   "authors": [
     {
@@ -30,7 +31,7 @@
     ]
   },
   "config": {
-    "process-timeout": 1200,
+    "process-timeout": 2400,
     "platform": {
       "php": "7.0.8"
     }
