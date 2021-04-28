@@ -366,7 +366,7 @@ class Updater
                 'composer update -n --no-ansi drupal/core webflo/drupal-core-require-dev symfony/*',
             ],
             'drupal/core-recommended' => [
-                'composer update drupal/core "drupal/core-*" --with-all-dependencies',
+//                'composer update drupal/core "drupal/core-*" --with-all-dependencies',
             ],
             'drupal/dropzonejs' => [
                 'composer update -n --no-ansi drupal/dropzonejs drupal/dropzonejs_eb_widget'
