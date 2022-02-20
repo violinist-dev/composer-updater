@@ -69,6 +69,29 @@ class Updater
     protected $bundledPackages;
 
     /**
+     * @var bool
+     */
+    protected $shouldThrowOnUnupdated = true;
+
+    /**
+     * @return bool
+     */
+    public function shouldThrowOnUnupdated(): bool
+    {
+        return $this->shouldThrowOnUnupdated;
+    }
+
+    /**
+     * @param bool $shouldThrowOnUnupdated
+     */
+    public function setShouldThrowOnUnupdated(bool $shouldThrowOnUnupdated): void
+    {
+        $this->shouldThrowOnUnupdated = $shouldThrowOnUnupdated;
+    }
+
+
+
+    /**
      * @return bool
      */
     public function shouldRunScripts(): bool
@@ -320,7 +343,7 @@ class Updater
             $version_from = $pre_update_data->source->reference;
             $version_to = $post_update_data->source->reference;
         }
-        if ($version_to === $version_from) {
+        if ($this->shouldThrowOnUnupdated && $version_to === $version_from) {
             // Nothing has happened here. Although that can be alright (like we
             // have updated some dependencies of this package) this is not what
             // this service does, currently, and also the title of the PR would be
