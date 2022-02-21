@@ -34,6 +34,9 @@
     "process-timeout": 2400,
     "platform": {
       "php": "7.0.8"
+    },
+    "allow-plugins": {
+      "ocramius/package-versions": true
     }
   },
   "require-dev": {
