@@ -76,7 +76,7 @@ class Updater
     /**
      * @return bool
      */
-    public function shouldThrowOnUnupdated()
+    public function shouldThrowOnUnupdated(): bool
     {
         return $this->shouldThrowOnUnupdated;
     }
@@ -84,7 +84,7 @@ class Updater
     /**
      * @param bool $shouldThrowOnUnupdated
      */
-    public function setShouldThrowOnUnupdated(bool $shouldThrowOnUnupdated): void
+    public function setShouldThrowOnUnupdated(bool $shouldThrowOnUnupdated)
     {
         $this->shouldThrowOnUnupdated = $shouldThrowOnUnupdated;
     }
