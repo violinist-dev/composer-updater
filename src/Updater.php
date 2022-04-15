@@ -132,7 +132,7 @@ class Updater
         // Now filter them. There should only be bundled packages that we can also find in composer.lock
         try {
             $lock = ComposerLockData::createFromFile($this->cwd . '/composer.lock');
-            $lock_data = $lock-getData();
+            $lock_data = $lock->getData();
             $this->bundledPackages = array_filter($bundledPackages, function ($package) use ($lock) {
                 try {
                     return $lock->getPackageData($package);
