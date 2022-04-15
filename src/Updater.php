@@ -140,7 +140,7 @@ class Updater
                     // Probably means the package is not there.
                     // Let's also see if we can find a match by wildcard.
                     foreach (['packages', 'packages-dev'] as $type) {
-                        if (empty ($lock_data->{$type}) {
+                        if (empty ($lock_data->{$type})) {
                             continue;
                         }
                         foreach ($lock_data->{$type} as $package_data) {
