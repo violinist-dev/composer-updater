@@ -1,3 +1,4 @@
 parameters:
+	level: 2
 	excludes_analyse:
 		- %rootDir%/../../../tests/assets
