@@ -44,7 +44,7 @@ abstract class IntegrationBase extends TestCase
         $this->lockString = @file_get_contents($file);
         $this->preLockData = ComposerLockData::createFromString($this->lockString);
         $directory = $this->getDirectory();
-        $updater = $this->createUpdater($directory, $this->package);
+        $updater = $this->createUpdater($directory);
         try {
             $updater->executeUpdate();
         } catch (\Throwable $e) {
