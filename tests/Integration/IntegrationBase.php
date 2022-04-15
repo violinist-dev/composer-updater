@@ -15,6 +15,10 @@ abstract class IntegrationBase extends TestCase
 
     protected $lockString;
 
+    protected $preLockData;
+
+    protected $postLockData;
+
     public function tearDown()
     {
         parent::tearDown();
@@ -38,7 +42,7 @@ abstract class IntegrationBase extends TestCase
     {
         $file = $this->getFile();
         $this->lockString = @file_get_contents($file);
-        $pre_lock_data = ComposerLockData::createFromString($this->lockString);
+        $this->preLockData = ComposerLockData::createFromString($this->lockString);
         $directory = $this->getDirectory();
         $updater = $this->createUpdater($directory, $this->package);
         try {
@@ -52,9 +56,9 @@ abstract class IntegrationBase extends TestCase
             throw $e;
         }
         // Now read the lock data of it.
-        $post_lock_data = ComposerLockData::createFromFile($file);
-        $log_package_data_pre = $pre_lock_data->getPackageData($this->package);
-        $log_package_data_post = $post_lock_data->getPackageData($this->package);
+        $this->postLockData = ComposerLockData::createFromFile($file);
+        $log_package_data_pre = $this->preLockData->getPackageData($this->package);
+        $log_package_data_post = $this->postLockData->getPackageData($this->package);
         $this->assertNotEquals($log_package_data_post->version, $log_package_data_pre->version);
     }
 
