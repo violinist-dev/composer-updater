@@ -42,9 +42,9 @@ jobs:
       - name: Install dependencies
         run: composer --verbose install
 
-      - name: Install patches if we have to
+      - name: Install patches and phpstan if we have to
         if: matrix.php-versions != 7.0
-        run: composer require --dev cweagans/composer-patches
+        run: composer require --dev cweagans/composer-patches phpstan/phpstan
 
       - name: Remove and reinstall phpunit
         if: matrix.php-versions != 7.0
@@ -67,3 +67,8 @@ jobs:
 
       - name: Run tests
         run: composer test
+
+      - name: run phpstan
+        if: matrix.php-versions != 7.0
+        run: phpstan analyze src tests
+
