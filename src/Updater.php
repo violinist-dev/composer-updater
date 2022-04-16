@@ -136,7 +136,6 @@ class Updater
                 try {
                     return $lock->getPackageData($package);
                 } catch (\Throwable $e) {
-                    return false;
                     // Probably means the package is not there.
                     // Let's also see if we can find a match by wildcard.
                     $lock_data = $lock->getData();
