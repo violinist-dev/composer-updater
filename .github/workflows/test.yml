@@ -10,6 +10,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        composer:
+          - 1
+          - 2
         php-versions:
           - "7.0"
           - "7.1"
@@ -30,8 +33,12 @@ jobs:
         with:
           php-version: ${{ matrix.php-versions }}
 
-      - name: Update composer
-        run: composer --verbose self-update --1
+      - name: Select the composer version
+        run: |
+          composer --version
+          composer self-update
+          composer self-update --${{ matrix.composer }}
+          composer --version
 
       - name: Dump composer verson
         run: composer --version
@@ -67,3 +74,5 @@ jobs:
 
       - name: Run tests
         run: composer test
+        env:
+          COMPOSER_VERSION: ${{ matrix.composer }}

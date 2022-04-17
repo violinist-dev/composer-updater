@@ -13,6 +13,10 @@ class DrupalLeagueOauthLoginTest extends IntegrationBase
             self::assertTrue(true, 'Skipping DrupalLeagueOauthLoginTest for version ' . phpversion());
             return;
         }
+        if (getenv('COMPOSER_VERSION') == 2) {
+            self::assertTrue(true, 'Skipping test on composer version 2');
+            return;
+        }
         parent::testEndToEnd();
     }
 }
