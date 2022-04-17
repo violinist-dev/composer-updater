@@ -74,3 +74,5 @@ jobs:
 
       - name: Run tests
         run: composer test
+        env:
+          COMPOSER_VERSION: ${{ matrix.composer }}
