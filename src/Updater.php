@@ -137,6 +137,21 @@ class Updater
                     return $lock->getPackageData($package);
                 } catch (\Throwable $e) {
                     // Probably means the package is not there.
+                    // Let's also see if we can find a match by wildcard.
+                    $lock_data = $lock->getData();
+                    foreach (['packages', 'packages-dev'] as $type) {
+                        if (empty($lock_data->{$type})) {
+                            continue;
+                        }
+                        foreach ($lock_data->{$type} as $package_data) {
+                            if (empty($package_data->name)) {
+                                continue;
+                            }
+                            if (fnmatch($package, $package_data->name)) {
+                                return true;
+                            }
+                        }
+                    }
                     return false;
                 }
             });
