@@ -44,7 +44,7 @@ jobs:
         run: composer --verbose install
     
       - name: Install dependencies
-        if: matrix.php-versions = 7.0
+        if: matrix.php-versions == 7.0
         run: composer --verbose --ignore-platform-reqs install
 
       - name: Install patches and phpstan if we have to
