@@ -87,7 +87,10 @@
             "php": "7.3"
         },
         "bin-dir": "bin",
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "composer/installers": true
+        }
     },
     "scripts": {
         "update-core": "composer update drupal/core-recommended drupal/core-composer-scaffold drupal/core-dev-pinned --with-dependencies"
