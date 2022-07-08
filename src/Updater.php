@@ -74,6 +74,11 @@ class Updater
     protected $shouldThrowOnUnupdated = true;
 
     /**
+     * @var string
+     */
+    protected $packageToCheck;
+
+    /**
      * @return bool
      */
     public function shouldThrowOnUnupdated(): bool
@@ -87,6 +92,11 @@ class Updater
     public function setShouldThrowOnUnupdated(bool $shouldThrowOnUnupdated)
     {
         $this->shouldThrowOnUnupdated = $shouldThrowOnUnupdated;
+    }
+
+    public function setPackageToCheckHasUpdated($package)
+    {
+        $this->packageToCheck = $package;
     }
 
 
@@ -165,6 +175,7 @@ class Updater
     {
         $this->cwd = $cwd;
         $this->package = $package;
+        $this->packageToCheck = $package;
     }
 
     /**
@@ -256,7 +267,7 @@ class Updater
     public function executeRequire($new_version)
     {
         $pre_update_lock = ComposerLockData::createFromFile($this->cwd . '/composer.lock');
-        $pre_update_data = $pre_update_lock->getPackageData($this->package);
+        $pre_update_data = $pre_update_lock->getPackageData($this->packageToCheck);
         $commands = $this->getRequireRecipes($new_version);
         $exception = null;
         $success = false;
@@ -301,7 +312,7 @@ class Updater
     public function executeUpdate()
     {
         $pre_update_lock = ComposerLockData::createFromFile($this->cwd . '/composer.lock');
-        $pre_update_data = $pre_update_lock->getPackageData($this->package);
+        $pre_update_data = $pre_update_lock->getPackageData($this->packageToCheck);
         $commands = $this->getUpdateRecipies();
         $exception = null;
         $success = false;
@@ -351,7 +362,7 @@ class Updater
             $this->log($process->getErrorOutput());
             throw new \Exception($message);
         }
-        $post_update_data = ComposerLockData::createFromString(json_encode($new_lock_data))->getPackageData($this->package);
+        $post_update_data = ComposerLockData::createFromString(json_encode($new_lock_data))->getPackageData($this->packageToCheck);
         $version_to = $post_update_data->version;
         $version_from = $pre_update_data->version;
         if (isset($post_update_data->source) && $post_update_data->source->type == 'git' && isset($pre_update_data->source)) {
@@ -373,7 +384,10 @@ class Updater
                 throw new NotUpdatedException('The version installed is still the same after trying to update.');
             }
         }
-        $this->postUpdateData = $post_update_data;
+        // We still want the post update data to be from the actual package though, no matter if we were actually
+        // checking if a dependency was updated or not.
+        $actual_package_post_update_data = ComposerLockData::createFromString(json_encode($new_lock_data))->getPackageData($this->package);
+        $this->postUpdateData = $actual_package_post_update_data;
     }
 
     /**

@@ -36,7 +36,8 @@
       "php": "7.0.8"
     },
     "allow-plugins": {
-      "ocramius/package-versions": true
+      "ocramius/package-versions": true,
+      "cweagans/composer-patches": true
     }
   },
   "require-dev": {
