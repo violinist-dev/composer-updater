@@ -32,7 +32,7 @@
   "config": {
     "process-timeout": 2400,
     "platform": {
-      "php": "7.1"
+      "php": "7.0.8"
     },
     "allow-plugins": {
       "ocramius/package-versions": true
