@@ -82,4 +82,4 @@ jobs:
 
       - name: run phpstan
         if: matrix.php-versions != 7.0
-        run: phpstan analyze src tests
+        run: ./vendor/bin/phpstan analyze src tests
