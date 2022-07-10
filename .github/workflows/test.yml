@@ -48,9 +48,6 @@ jobs:
 
       - name: Install dependencies
         run: composer --verbose install
-    
-      - name: Install dependencies
-        run: composer --verbose install
 
       - name: Install patches and phpstan if we have to
         if: matrix.php-versions != 7.0
