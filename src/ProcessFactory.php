@@ -12,6 +12,6 @@ class ProcessFactory implements ProcessFactoryInterface
      */
     public function getProcess($commandline, $cwd = null, array $env = null, $input = null, $timeout = 60, array $options = null)
     {
-        return new Process($commandline, $cwd, $env, $input, $timeout, $options);
+        return new Process($commandline, $cwd, $env, $input, $timeout);
     }
 }
