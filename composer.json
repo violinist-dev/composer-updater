@@ -32,7 +32,8 @@
   "config": {
     "process-timeout": 2400,
     "allow-plugins": {
-      "ocramius/package-versions": true
+      "ocramius/package-versions": true,
+      "cweagans/composer-patches": true
     }
   },
   "require-dev": {
