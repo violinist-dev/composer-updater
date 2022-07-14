@@ -49,9 +49,9 @@ jobs:
       - name: Install dependencies
         run: composer --verbose install
 
-      - name: Install patches if we have to
+      - name: Install patches and phpstan if we have to
         if: matrix.php-versions != 7.0
-        run: composer require --dev cweagans/composer-patches
+        run: composer require --dev cweagans/composer-patches phpstan/phpstan
 
       - name: Remove and reinstall phpunit
         if: matrix.php-versions != 7.0
@@ -68,11 +68,15 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}-${{ matrix.php-version }}
           restore-keys: |
-            ${{ runner.os }}-composer-
+            ${{ runner.os }}-composer-${{ matrix.php-version }}
 
       - name: Run tests
         run: composer test
         env:
           COMPOSER_VERSION: ${{ matrix.composer }}
+
+      - name: run phpstan
+        if: matrix.php-versions != 7.0
+        run: ./vendor/bin/phpstan analyze src tests
