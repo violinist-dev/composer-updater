@@ -388,6 +388,9 @@ class Updater
         // checking if a dependency was updated or not.
         $actual_package_post_update_data = ComposerLockData::createFromString(json_encode($new_lock_data))->getPackageData($this->package);
         $this->postUpdateData = $actual_package_post_update_data;
+        // And make sure we log this as well.
+        $this->log($process->getOutput());
+        $this->log($process->getErrorOutput());
     }
 
     /**
