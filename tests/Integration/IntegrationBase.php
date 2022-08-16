@@ -19,7 +19,7 @@ abstract class IntegrationBase extends TestCase
 
     protected $postLockData;
 
-    public function tearDown()
+    public function tearDown() : void
     {
         parent::tearDown();
         $file = $this->getFile();
