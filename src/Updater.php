@@ -429,17 +429,17 @@ class Updater
                 ['composer', 'update', '-n', '--no-ansi', 'drupal/core', 'webflo/drupal-core-require-dev', 'symfony/*'],
             ],
             'drupal/core-recommended' => [
-                'composer update drupal/core "drupal/core-*" --with-all-dependencies',
+                ['composer', 'update', 'drupal/core', '"drupal/core-*"', '--with-all-dependencies'],
             ],
             'drupal/dropzonejs' => [
-                'composer update -n --no-ansi drupal/dropzonejs drupal/dropzonejs_eb_widget'
+                ['composer', 'update', '-n', '--no-ansi', 'drupal/dropzonejs', 'drupal/dropzonejs_eb_widget'],
             ],
             'drupal/commerce' => [
-                'composer update -n --no-ansi drupal/commerce drupal/commerce_price drupal/commerce_product drupal/commerce_order drupal/commerce_payment drupal/commerce_payment_example drupal/commerce_checkout drupal/commerce_tax drupal/commerce_cart drupal/commerce_log drupal/commerce_store drupal/commerce_promotion drupal/commerce_number_pattern'
+                ['composer', 'update', '-n', '--no-ansi', 'drupal/commerce', 'drupal/commerce_price', 'drupal/commerce_product', 'drupal/commerce_order', 'drupal/commerce_payment', 'drupal/commerce_payment_example', 'drupal/commerce_checkout', 'drupal/commerce_tax', 'drupal/commerce_cart', 'drupal/commerce_log', 'drupal/commerce_store', 'drupal/commerce_promotion', 'drupal/commerce_number_pattern'],
             ],
             'drupal/league_oauth_login' => [
-                'composer update -n --no-ansi drupal/league_oauth_login drupal/league_oauth_login_github drupal/league_oauth_login_gitlab'
-            ]
+                ['composer', 'update', '-n', '--no-ansi', 'drupal/league_oauth_login', 'drupal/league_oauth_login_github', 'drupal/league_oauth_login_gitlab'],
+            ],
         ];
         $return = [
             ['composer', 'update', '-n', '--no-ansi', $this->package],
