@@ -440,7 +440,7 @@ class Updater
             ]
         ];
         $return = [
-            'composer update -n --no-ansi ' .  $this->package
+            ['composer', 'update', '-n', '--no-ansi', $this->package],
         ];
         if ($this->hasBundledPackages()) {
             $return = [
