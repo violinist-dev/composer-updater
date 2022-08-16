@@ -444,7 +444,7 @@ class Updater
         ];
         if ($this->hasBundledPackages()) {
             $return = [
-                sprintf('composer update -n --no-ansi %s %s', $this->package, implode(' ', $this->getBundledPackages())),
+                array_merge(['composer', 'update', '-n', '--no-ansi', $this->package], $this->getBundledPackages()),
             ];
         }
         if (isset($map[$this->package])) {
