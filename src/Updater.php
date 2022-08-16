@@ -327,7 +327,7 @@ class Updater
                     ]
                 );
                 $this->log("Creating command $full_command", [
-                    'command' => $full_command,
+                    'command' => implode(' ', $full_command),
                 ]);
                 $process = $this->getProcessFactory()->getProcess($full_command, $this->cwd, $this->getEnv(), null, $this->timeout);
                 $process->run();
