@@ -319,11 +319,12 @@ class Updater
         $e = null;
         foreach ($commands as $command) {
             try {
-                $full_command = sprintf(
-                    '%s %s %s',
+                $full_command = array_merge(
                     $command,
-                    ($this->isWithUpdate() ? '--with-dependencies' : ''),
-                    ($this->shouldRunScripts() ? '' : '--no-scripts')
+                    [
+                        ($this->isWithUpdate() ? '--with-dependencies' : ''),
+                        ($this->shouldRunScripts() ? '' : '--no-scripts'),
+                    ]
                 );
                 $this->log("Creating command $full_command", [
                     'command' => $full_command,
