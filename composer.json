@@ -24,6 +24,7 @@
     "violinist-dev/composer-lock-data": "^1.0"
   },
   "scripts": {
+    "phpstan": "phpstan analyse src tests",
     "test": [
       "./vendor/bin/phpunit",
       "./vendor/bin/phpcs -p -n"
