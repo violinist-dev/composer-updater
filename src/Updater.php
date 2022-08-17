@@ -324,7 +324,7 @@ class Updater
                     array_filter([
                         ($this->isWithUpdate() ? '--with-dependencies' : ''),
                         ($this->shouldRunScripts() ? '' : '--no-scripts'),
-                    ]),
+                    ])
                 );
                 $log_command = implode(' ', $full_command);
                 $this->log("Creating command $log_command", [
