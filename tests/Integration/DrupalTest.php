@@ -2,6 +2,8 @@
 
 namespace Violinist\ComposerUpdater\Tests\Integration;
 
+use Violinist\ComposerUpdater\Exception\ComposerUpdateProcessFailedException;
+
 class DrupalTest extends IntegrationBase
 {
     protected $package = 'drupal/core';
