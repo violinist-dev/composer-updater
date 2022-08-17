@@ -49,13 +49,6 @@ jobs:
       - name: Install dependencies
         run: composer --verbose install
 
-      - name: Coveralls
-        if: matrix.php-version == 7.4
-        env:
-          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          php vendor/bin/php-coveralls -v
-
       - name: Run phpstan
         if: matrix.php-version != 7.0
         run: composer phpstan
@@ -64,3 +57,10 @@ jobs:
         run: composer test
         env:
           COMPOSER_VERSION: ${{ matrix.composer }}
+
+      - name: Coveralls
+        if: matrix.php-version == 7.4
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          php vendor/bin/php-coveralls -v
