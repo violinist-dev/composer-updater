@@ -13,12 +13,12 @@ jobs:
         composer:
           - 1
           - 2
-        php-versions:
-          - "7.0"
-          - "7.1"
+        php-version:
           - "7.2"
           - "7.3"
           - "7.4"
+          - "8.0"
+          - "8.1"
     steps:
       - name: Dump matrix context
         env:
@@ -31,7 +31,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php-versions }}
+          php-version: ${{ matrix.php-version }}
 
       - name: Select the composer version
         run: |
@@ -49,34 +49,18 @@ jobs:
       - name: Install dependencies
         run: composer --verbose install
 
-      - name: Install patches and phpstan if we have to
-        if: matrix.php-versions != 7.0
-        run: composer require --dev cweagans/composer-patches phpstan/phpstan-phpunit phpstan/phpstan
-
-      - name: Remove and reinstall phpunit
-        if: matrix.php-versions != 7.0
-        run: |
-          rm -rf vendor/phpunit
-          composer install
-
-      # Since this is a library we do not have a lock file. But at this point we do, and now we want to use that for the
-      # tests we are about to run.
-      - name: Get Composer Cache Directory
-        id: composer-cache
-        run: |
-          echo "::set-output name=dir::$(composer config cache-files-dir)"
-      - uses: actions/cache@v2
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}-${{ matrix.php-version }}
-          restore-keys: |
-            ${{ runner.os }}-composer-${{ matrix.php-version }}
+      - name: Run phpstan
+        if: matrix.php-version != 7.0
+        run: composer phpstan
 
       - name: Run tests
         run: composer test
         env:
           COMPOSER_VERSION: ${{ matrix.composer }}
 
-      - name: run phpstan
-        if: matrix.php-versions != 7.0
-        run: ./vendor/bin/phpstan analyze src tests
+      - name: Coveralls
+        if: matrix.php-version == 7.4
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          php vendor/bin/php-coveralls -v

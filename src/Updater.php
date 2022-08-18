@@ -277,14 +277,16 @@ class Updater
                 continue;
             }
             try {
-                $full_command = sprintf(
-                    '%s %s %s',
+                $full_command = array_merge(
                     $command,
-                    ($this->isWithUpdate() ? '--update-with-dependencies' : ''),
-                    (!$this->shouldRunScripts() ? '--no-scripts' : '')
+                    array_filter([
+                        ($this->isWithUpdate() ? '--update-with-dependencies' : ''),
+                        (!$this->shouldRunScripts() ? '--no-scripts' : ''),
+                    ])
                 );
-                $this->log("Creating command $full_command", [
-                    'command' => $full_command,
+                $log_command = implode(' ', $full_command);
+                $this->log("Creating command $log_command", [
+                    'command' => $log_command,
                 ]);
                 $process = $this->getProcessFactory()->getProcess($full_command, $this->cwd, $this->getEnv(), null, $this->timeout);
                 $process->run();
@@ -319,14 +321,16 @@ class Updater
         $e = null;
         foreach ($commands as $command) {
             try {
-                $full_command = sprintf(
-                    '%s %s %s',
+                $full_command = array_merge(
                     $command,
-                    ($this->isWithUpdate() ? '--with-dependencies' : ''),
-                    ($this->shouldRunScripts() ? '' : '--no-scripts')
+                    array_filter([
+                        ($this->isWithUpdate() ? '--with-dependencies' : ''),
+                        ($this->shouldRunScripts() ? '' : '--no-scripts'),
+                    ])
                 );
-                $this->log("Creating command $full_command", [
-                    'command' => $full_command,
+                $log_command = implode(' ', $full_command);
+                $this->log("Creating command $log_command", [
+                    'command' => $log_command,
                 ]);
                 $process = $this->getProcessFactory()->getProcess($full_command, $this->cwd, $this->getEnv(), null, $this->timeout);
                 $process->run();
@@ -409,7 +413,13 @@ class Updater
     protected function getRequireRecipes($version)
     {
         return [
-            sprintf('composer %s -n --no-ansi %s:%s%s', $this->isDevPackage() ? 'require --dev' : 'require', $this->package, $this->constraint, $version)
+            [
+                'composer',
+                $this->isDevPackage() ? 'require --dev' : 'require',
+                '-n',
+                '--no-ansi',
+                sprintf('%s:%s%s', $this->package, $this->constraint, $version),
+            ],
         ];
     }
 
@@ -417,28 +427,28 @@ class Updater
     {
         $map = [
             'drupal/core' => [
-                'composer update drupal/core "drupal/core-*" --with-all-dependencies',
-                'composer update -n --no-ansi drupal/core webflo/drupal-core-require-dev symfony/*',
+                ['composer', 'update', 'drupal/core', 'drupal/core-*', '--with-all-dependencies'],
+                ['composer', 'update', '-n', '--no-ansi', 'drupal/core', 'webflo/drupal-core-require-dev', 'symfony/*'],
             ],
             'drupal/core-recommended' => [
-                'composer update drupal/core "drupal/core-*" --with-all-dependencies',
+                ['composer', 'update', 'drupal/core', 'drupal/core-*', '--with-all-dependencies'],
             ],
             'drupal/dropzonejs' => [
-                'composer update -n --no-ansi drupal/dropzonejs drupal/dropzonejs_eb_widget'
+                ['composer', 'update', '-n', '--no-ansi', 'drupal/dropzonejs', 'drupal/dropzonejs_eb_widget'],
             ],
             'drupal/commerce' => [
-                'composer update -n --no-ansi drupal/commerce drupal/commerce_price drupal/commerce_product drupal/commerce_order drupal/commerce_payment drupal/commerce_payment_example drupal/commerce_checkout drupal/commerce_tax drupal/commerce_cart drupal/commerce_log drupal/commerce_store drupal/commerce_promotion drupal/commerce_number_pattern'
+                ['composer', 'update', '-n', '--no-ansi', 'drupal/commerce', 'drupal/commerce_price', 'drupal/commerce_product', 'drupal/commerce_order', 'drupal/commerce_payment', 'drupal/commerce_payment_example', 'drupal/commerce_checkout', 'drupal/commerce_tax', 'drupal/commerce_cart', 'drupal/commerce_log', 'drupal/commerce_store', 'drupal/commerce_promotion', 'drupal/commerce_number_pattern'],
             ],
             'drupal/league_oauth_login' => [
-                'composer update -n --no-ansi drupal/league_oauth_login drupal/league_oauth_login_github drupal/league_oauth_login_gitlab'
-            ]
+                ['composer', 'update', '-n', '--no-ansi', 'drupal/league_oauth_login', 'drupal/league_oauth_login_github', 'drupal/league_oauth_login_gitlab'],
+            ],
         ];
         $return = [
-            'composer update -n --no-ansi ' .  $this->package
+            ['composer', 'update', '-n', '--no-ansi', $this->package],
         ];
         if ($this->hasBundledPackages()) {
             $return = [
-                sprintf('composer update -n --no-ansi %s %s', $this->package, implode(' ', $this->getBundledPackages())),
+                array_merge(['composer', 'update', '-n', '--no-ansi', $this->package], $this->getBundledPackages()),
             ];
         }
         if (isset($map[$this->package])) {
