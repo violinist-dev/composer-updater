@@ -277,11 +277,12 @@ class Updater
                 continue;
             }
             try {
-                $full_command = sprintf(
-                    '%s %s %s',
+                $full_command = array_merge(
                     $command,
-                    ($this->isWithUpdate() ? '--update-with-dependencies' : ''),
-                    (!$this->shouldRunScripts() ? '--no-scripts' : '')
+                    array_filter([
+                        ($this->isWithUpdate() ? '--update-with-dependencies' : ''),
+                        (!$this->shouldRunScripts() ? '--no-scripts' : ''),
+                    ])
                 );
                 $this->log("Creating command $full_command", [
                     'command' => $full_command,
