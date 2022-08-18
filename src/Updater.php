@@ -32,7 +32,7 @@ class Updater
     protected $devPackage = false;
 
     /**
-     * @var ProcessFactoryInterface
+     * @var ProcessFactoryInterface|null
      */
     protected $processFactory;
 
@@ -47,7 +47,7 @@ class Updater
     protected $cwd;
 
     /**
-     * @var LoggerInterface
+     * @var LoggerInterface|null
      */
     protected $logger;
 
@@ -199,7 +199,7 @@ class Updater
      */
     public function getProcessFactory()
     {
-        if (!$this->processFactory) {
+        if (!$this->processFactory instanceof ProcessFactoryInterface) {
             $this->processFactory = new ProcessFactory();
         }
         return $this->processFactory;
@@ -218,7 +218,7 @@ class Updater
      */
     public function getLogger()
     {
-        if (!$this->logger) {
+        if (!$this->logger instanceof LoggerInterface) {
             $this->logger = new DefaultLogger();
         }
         return $this->logger;

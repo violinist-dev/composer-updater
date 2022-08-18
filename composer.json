@@ -42,12 +42,5 @@
     "php-coveralls/php-coveralls": "^2.1",
     "squizlabs/php_codesniffer": "^3.3",
     "phpstan/phpstan": "^1.0"
-  },
-  "extra": {
-    "patches": {
-      "phpunit/phpunit-mock-objects": {
-        "Fix things on php 7.4": "./patches/mock-obj.patch"
-      }
-    }
   }
 }
