@@ -1,6 +1,6 @@
 parameters:
         includes:
-	- vendor/phpstan/phpstan-phpunit/extension.neon
-	level: 5
-	excludePaths:
-		- tests/assets
+            - vendor/phpstan/phpstan-phpunit/extension.neon
+        level: 5
+        excludePaths:
+            - tests/assets
