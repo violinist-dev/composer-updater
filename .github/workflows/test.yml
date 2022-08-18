@@ -51,7 +51,7 @@ jobs:
 
       - name: Install patches and phpstan if we have to
         if: matrix.php-versions != 7.0
-        run: composer require --dev cweagans/composer-patches phpstan/phpstan
+        run: composer require --dev cweagans/composer-patches phpstan/phpstan-phpunit phpstan/phpstan
 
       - name: Remove and reinstall phpunit
         if: matrix.php-versions != 7.0
