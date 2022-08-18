@@ -284,8 +284,9 @@ class Updater
                         (!$this->shouldRunScripts() ? '--no-scripts' : ''),
                     ])
                 );
-                $this->log("Creating command $full_command", [
-                    'command' => $full_command,
+                $log_command = implode(' ', $full_command);
+                $this->log("Creating command $log_command", [
+                    'command' => $log_command,
                 ]);
                 $process = $this->getProcessFactory()->getProcess($full_command, $this->cwd, $this->getEnv(), null, $this->timeout);
                 $process->run();
