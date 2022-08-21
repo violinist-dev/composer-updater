@@ -413,13 +413,14 @@ class Updater
     protected function getRequireRecipes($version)
     {
         return [
-            [
+            array_filter([
                 'composer',
-                $this->isDevPackage() ? 'require --dev' : 'require',
+                'require',
+                $this->isDevPackage() ? '--dev' : '',
                 '-n',
                 '--no-ansi',
                 sprintf('%s:%s%s', $this->package, $this->constraint, $version),
-            ],
+            ]),
         ];
     }
 
