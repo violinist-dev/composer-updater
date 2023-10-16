@@ -274,7 +274,7 @@ class Updater
     protected function getPreUpdateData() : array
     {
         $pre_update_lock = ComposerLockData::createFromFile($this->cwd . '/composer.lock');
-        return array_map(function($package) use ($pre_update_lock) {
+        return array_map(function ($package) use ($pre_update_lock) {
             return $pre_update_lock->getPackageData($package);
         }, $this->packagesToCheck);
     }
