@@ -15,5 +15,4 @@ class PackageToCheckTest extends IntegrationBase
         $updater->setPackageToCheckHasUpdated($this->package);
         return $updater;
     }
-
 }
