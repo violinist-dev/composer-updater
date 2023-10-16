@@ -74,9 +74,9 @@ class Updater
     protected $shouldThrowOnUnupdated = true;
 
     /**
-     * @var string
+     * @var array
      */
-    protected $packageToCheck;
+    protected $packagesToCheck = [];
 
     /**
      * @return bool
@@ -94,12 +94,19 @@ class Updater
         $this->shouldThrowOnUnupdated = $shouldThrowOnUnupdated;
     }
 
+    /**
+     * @deprecated This method should not be used, and instead we should use the
+     * one that accepts an array of packages. @see ::setPackagesToCheckHasUpdated
+     */
     public function setPackageToCheckHasUpdated($package)
     {
-        $this->packageToCheck = $package;
+        $this->setPackagesToCheckHasUpdated([$package]);
     }
 
-
+    public function setPackagesToCheckHasUpdated(array $packages)
+    {
+        $this->packagesToCheck = $packages;
+    }
 
     /**
      * @return bool
@@ -175,7 +182,7 @@ class Updater
     {
         $this->cwd = $cwd;
         $this->package = $package;
-        $this->packageToCheck = $package;
+        $this->setPackagesToCheckHasUpdated([$package]);
     }
 
     /**
@@ -264,10 +271,17 @@ class Updater
         $this->devPackage = $devPackage;
     }
 
-    public function executeRequire($new_version)
+    protected function getPreUpdataData() : array
     {
         $pre_update_lock = ComposerLockData::createFromFile($this->cwd . '/composer.lock');
-        $pre_update_data = $pre_update_lock->getPackageData($this->packageToCheck);
+        return array_map(function($package) use ($pre_update_lock) {
+            return $pre_update_lock->getPackageData($package);
+        }, $this->packagesToCheck);
+    }
+
+    public function executeRequire($new_version)
+    {
+        $pre_update_data = $this->getPreUpdateData();
         $commands = $this->getRequireRecipes($new_version);
         $exception = null;
         $success = false;
@@ -313,8 +327,7 @@ class Updater
      */
     public function executeUpdate()
     {
-        $pre_update_lock = ComposerLockData::createFromFile($this->cwd . '/composer.lock');
-        $pre_update_data = $pre_update_lock->getPackageData($this->packageToCheck);
+        $pre_update_data = $this->getPreUpdataData();
         $commands = $this->getUpdateRecipies();
         $exception = null;
         $success = false;
@@ -354,7 +367,7 @@ class Updater
         }
     }
 
-    protected function handlePostComposerCommand($pre_update_data, Process $process)
+    protected function handlePostComposerCommand(array $pre_update_data_array, Process $process)
     {
         $new_lock_data = @json_decode(@file_get_contents(sprintf('%s/composer.lock', $this->cwd)));
         if (!$new_lock_data) {
@@ -366,27 +379,36 @@ class Updater
             $this->log($process->getErrorOutput());
             throw new \Exception($message);
         }
-        $post_update_data = ComposerLockData::createFromString(json_encode($new_lock_data))->getPackageData($this->packageToCheck);
-        $version_to = $post_update_data->version;
-        $version_from = $pre_update_data->version;
-        if (isset($post_update_data->source) && $post_update_data->source->type == 'git' && isset($pre_update_data->source)) {
-            $version_from = $pre_update_data->source->reference;
-            $version_to = $post_update_data->source->reference;
-        }
-        if ($this->shouldThrowOnUnupdated && $version_to === $version_from) {
-            // Nothing has happened here. Although that can be alright (like we
-            // have updated some dependencies of this package) this is not what
-            // this service does, currently, and also the title of the PR would be
-            // wrong.
-            // In theory though, the reference sources can be the same (the same commit), but the
-            // version is different. In which case it does not really matter much to update, but it
-            // can be frustrating to get an error. So let's not give an error.
-            if ($post_update_data->version === $pre_update_data->version) {
-                $this->log($process->getErrorOutput(), [
-                    'package' => $this->package,
-                ]);
-                throw new NotUpdatedException('The version installed is still the same after trying to update.');
+        $has_updated_at_least_one_package = false;
+        foreach ($this->packagesToCheck as $package) {
+            $pre_update_data = $this->getPreUpdataDataForPackageFromArray($pre_update_data_array, $package);
+            $post_update_data = ComposerLockData::createFromString(json_encode($new_lock_data))->getPackageData($package);
+            $version_to = $post_update_data->version;
+            $version_from = $pre_update_data->version;
+            if (isset($post_update_data->source) && $post_update_data->source->type == 'git' && isset($pre_update_data->source)) {
+                $version_from = $pre_update_data->source->reference;
+                $version_to = $post_update_data->source->reference;
             }
+            if ($version_from === $version_to) {
+                // In theory though, the reference sources can be the same (the same commit), but the
+                // version is different. In which case it does not really matter much to update, but it
+                // can be frustrating to get an error. So let's not give an error.
+                if ($post_update_data->version === $pre_update_data->version) {
+                    $this->log($process->getErrorOutput(), [
+                        'package' => $this->package,
+                    ]);
+                } else {
+                    $has_updated_at_least_one_package = true;
+                }
+            } else {
+                $has_updated_at_least_one_package = true;
+            }
+        }
+        if ($this->shouldThrowOnUnupdated && !$has_updated_at_least_one_package) {
+            // Nothing has happened here. Although that can be alright (like we
+            // have updated some dependencies of this package), we have at least
+            // not updated any of the expected dependencies at this point.
+            throw new NotUpdatedException('The version installed is still the same after trying to update.');
         }
         // We still want the post update data to be from the actual package though, no matter if we were actually
         // checking if a dependency was updated or not.
@@ -395,6 +417,16 @@ class Updater
         // And make sure we log this as well.
         $this->log($process->getOutput());
         $this->log($process->getErrorOutput());
+    }
+
+    protected function getPreUpdataDataForPackageFromArray(array $pre_update_data_array, $package) : ?\stdClass
+    {
+        foreach ($pre_update_data_array as $item) {
+            if ($item->name === $package) {
+                return $item;
+            }
+        }
+        return null;
     }
 
     /**
