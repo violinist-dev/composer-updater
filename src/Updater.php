@@ -271,7 +271,7 @@ class Updater
         $this->devPackage = $devPackage;
     }
 
-    protected function getPreUpdataData() : array
+    protected function getPreUpdateData() : array
     {
         $pre_update_lock = ComposerLockData::createFromFile($this->cwd . '/composer.lock');
         return array_map(function($package) use ($pre_update_lock) {
@@ -327,7 +327,7 @@ class Updater
      */
     public function executeUpdate()
     {
-        $pre_update_data = $this->getPreUpdataData();
+        $pre_update_data = $this->getPreUpdateData();
         $commands = $this->getUpdateRecipies();
         $exception = null;
         $success = false;
