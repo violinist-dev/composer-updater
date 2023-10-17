@@ -18,5 +18,4 @@ class RequireTest extends IntegrationBase
         }
         parent::testEndToEnd();
     }
-
 }
