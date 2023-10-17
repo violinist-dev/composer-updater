@@ -11,6 +11,9 @@ class PackageToCheckTest extends IntegrationBase
 
     protected function createUpdater($directory)
     {
+        if (version_compare(phpversion(), "7.3.0", "<")) {
+            self::expectException(ComposerUpdateProcessFailedException::class);
+        }
         $updater = new Updater($directory, 'drupal/recaptcha');
         $updater->setPackageToCheckHasUpdated($this->package);
         return $updater;
