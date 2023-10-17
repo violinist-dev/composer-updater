@@ -13,7 +13,7 @@ class RequireTest extends IntegrationBase
 
     public function testEndToEnd()
     {
-        if (version_compare(phpversion(), "7.3.0", "<")) {
+        if (version_compare(phpversion(), "8.0.0", "<")) {
             $this->expectException(NotUpdatedException::class);
         }
         if ((int) getenv('COMPOSER_VERSION') === 1) {
