@@ -3,6 +3,7 @@
 namespace Violinist\ComposerUpdater\Tests\Integration;
 
 use Violinist\ComposerUpdater\Updater;
+use Violinist\ComposerUpdater\Exception\ComposerUpdateProcessFailedException;
 
 class PackageToCheckTest extends IntegrationBase
 {
