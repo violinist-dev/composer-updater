@@ -15,22 +15,36 @@ abstract class IntegrationBase extends TestCase
 
     protected $lockString;
 
+    protected $jsonString;
+
     protected $preLockData;
 
     protected $postLockData;
 
+    protected $useUpdate = true;
+
+    protected $newVersion;
+
     public function tearDown() : void
     {
         parent::tearDown();
-        $file = $this->getFile();
+        $lock_file = $this->getLockFile();
         // Now make sure we reset it after us.
-        @file_put_contents($file, $this->lockString);
+        @file_put_contents($lock_file, $this->lockString);
+        $json_file = $this->getComposerJsonFile();
+        @file_put_contents($json_file, $this->jsonString);
     }
 
-    protected function getFile()
+    protected function getLockFile()
     {
         $directory = $this->getDirectory();
         return "$directory/composer.lock";
+    }
+
+    protected function getComposerJsonFile()
+    {
+        $directory = $this->getDirectory();
+        return "$directory/composer.json";
     }
 
     protected function getDirectory()
@@ -40,13 +54,18 @@ abstract class IntegrationBase extends TestCase
 
     public function testEndToEnd()
     {
-        $file = $this->getFile();
-        $this->lockString = @file_get_contents($file);
+        $file = $this->getLockFile();
+        $this->lockString = @file_get_contents($this->getLockFile());
+        $this->jsonString = @file_get_contents($this->getComposerJsonFile());
         $this->preLockData = ComposerLockData::createFromString($this->lockString);
         $directory = $this->getDirectory();
         $updater = $this->createUpdater($directory);
         try {
-            $updater->executeUpdate();
+            if ($this->useUpdate) {
+                $updater->executeUpdate();
+            } else {
+                $updater->executeRequire($this->newVersion);
+            }
         } catch (\Throwable $e) {
             if (method_exists($e, 'getErrorOutput')) {
                 /** @var ComposerUpdateProcessFailedException $ex */
