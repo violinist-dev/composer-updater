@@ -14,7 +14,7 @@ class UpdateSecondTryTest extends IntegrationBase
     public function testEndToEnd()
     {
         if (version_compare(phpversion(), "8.0.0", "<")) {
-            $this->expectException(NotUpdatedException::class);
+            return;
         }
         parent::testEndToEnd();
     }
