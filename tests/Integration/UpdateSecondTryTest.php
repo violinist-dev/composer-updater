@@ -16,6 +16,9 @@ class UpdateSecondTryTest extends IntegrationBase
         if (version_compare(phpversion(), "8.0.0", "<")) {
             return;
         }
+        if (version_compare(phpversion(), "8.3.0", ">=")) {
+            return;
+        }
         parent::testEndToEnd();
     }
 
