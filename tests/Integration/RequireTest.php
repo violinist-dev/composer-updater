@@ -17,7 +17,7 @@ class RequireTest extends IntegrationBase
             $this->expectException(NotUpdatedException::class);
         }
         if (version_compare(phpversion(), "8.3.0", ">=")) {
-          self::expectException(NotUpdatedException::class);
+            self::expectException(NotUpdatedException::class);
         }
         parent::testEndToEnd();
     }
