@@ -15,7 +15,7 @@ class PackageToCheckTest extends IntegrationBase
         if (version_compare(phpversion(), "7.3.0", "<")) {
             self::expectException(ComposerUpdateProcessFailedException::class);
         }
-        if (version_compare(phpversion(), "8.4.0", ">=")) {
+        if (version_compare(phpversion(), "8.3.99", ">=")) {
             self::expectException(ComposerUpdateProcessFailedException::class);
         }
         $updater = new Updater($directory, 'drupal/recaptcha');
